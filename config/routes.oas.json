@@ -57,7 +57,7 @@
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "baseUrl": "${env.CHOMP_PWA_URL}"
+              "baseUrl": "${env.BASE_URL}"
             }
           },
           "policies": {
