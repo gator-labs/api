@@ -1,0 +1,278 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "0.1.0",
+    "title": "CHOMP API",
+    "description": "Create questions and submit answers, to be resolved by CHOMP's mechanism engine. To request an API key, contact engineering@gator.so.",
+    "contact": {
+      "name": "API Support",
+      "url": "https://t.me/+ROJHe1iywYNkODA1",
+      "email": "engineering@gator.so"
+    }
+  },
+  "paths": {
+    "/v1/questions": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "post": {
+        "summary": "Create Question",
+        "description": "Create a new Question that can be resolved by CHOMP's oracle.",
+        "operationId": "6bd16c9b-fff0-4d2b-82ca-bf16adc63a99",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuestionRequest"
+              },
+              "example": {
+                "title": "The CIA ran a mind control project called MK-Ultra.",
+                "options": [
+                  {
+                    "title": "Conspiracy",
+                    "index": 0
+                  },
+                  {
+                    "title": "Real",
+                    "index": 1
+                  }
+                ],
+                "description": "From lizard people to leaked documents, some theories are pure fiction—others turned out to be true. Can you tell what is real and what is conspiracy cap?"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CreateQuestion200"
+          },
+          "400": {
+            "$ref": "#/components/responses/CreateQuestion400"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "${env.CHOMP_PWA_URL}"
+            }
+          },
+          "policies": {
+            "inbound": [
+              "rate-limit-inbound",
+              "add-user-metadata",
+              "api-key-inbound",
+              "set-headers-inbound"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OptionInput": {
+        "type": "object",
+        "title": "Array of question options",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The text of the option"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sequential integer starting at 0"
+          }
+        },
+        "required": [
+          "title",
+          "index"
+        ],
+        "additionalProperties": false
+      },
+      "OptionOutput": {
+        "type": "object",
+        "title": "OptionOutput",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sequential integer starting at 0"
+          }
+        },
+        "required": [
+          "id",
+          "index"
+        ],
+        "additionalProperties": false
+      },
+      "CreateQuestionRequest": {
+        "type": "object",
+        "title": "CreateQuestionRequest",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The text of the question"
+          },
+          "options": {
+            "title": "Options array",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OptionInput"
+            },
+            "minItems": 2,
+            "maxItems": 4,
+            "description": "Must contain exactly 2 or 4 options."
+          },
+          "rules": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "startTimestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting starts."
+          },
+          "endTimestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting ends."
+          },
+          "onChainAddress": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "options"
+        ],
+        "additionalProperties": false
+      },
+      "CreateQuestionResponse": {
+        "type": "object",
+        "title": "CreateQuestionResponse",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "options": {
+            "title": "Options array",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OptionOutput"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "options"
+        ],
+        "additionalProperties": false
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "title": "ErrorResponse",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Machine readable error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human readable error description"
+          }
+        },
+        "required": [
+          "error",
+          "message"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "responses": {
+      "CreateQuestion200": {
+        "description": "Question created",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateQuestionResponse"
+            },
+            "examples": {
+              "default": {
+                "summary": "Example response",
+                "value": {
+                  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+                  "options": [
+                    {
+                      "id": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
+                      "index": 0
+                    },
+                    {
+                      "id": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2",
+                      "index": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateQuestion400": {
+        "description": "Invalid request parameters",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "invalid_options_exact_count": {
+                "summary": "Exactly 2 or 4 options must be provided",
+                "value": {
+                  "error": "invalid_options",
+                  "message": "Exactly 2 or 4 options must be provided"
+                }
+              },
+              "invalid_options_missing_fields": {
+                "summary": "Option missing title/index",
+                "value": {
+                  "error": "invalid_options",
+                  "message": "Option missing title/index"
+                }
+              },
+              "invalid_title": {
+                "summary": "Title must be defined",
+                "value": {
+                  "error": "invalid_title",
+                  "message": "Title must be defined"
+                }
+              },
+              "invalid_end_timestamp": {
+                "summary": "endTimestamp must be after startTimestamp",
+                "value": {
+                  "error": "invalid_end_timestamp",
+                  "message": "endTimestamp must be after startTimestamp"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
