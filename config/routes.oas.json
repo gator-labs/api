@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "version": "0.1.2",
+    "version": "0.1.5",
     "title": "CHOMP API",
     "description": "Create questions and submit answers, to be resolved by CHOMP's mechanism engine. To request an API key, contact engineering@gator.so.",
     "contact": {
@@ -31,14 +31,20 @@
                   { "title": "Conspiracy", "index": 0 },
                   { "title": "Real", "index": 1 }
                 ],
+                "activeAt": "2025-05-01T00:00:00Z",
+                "resolvesAt": "2025-05-02T00:00:00Z",
                 "description": "From lizard people to leaked documents, some theories are pure fiction—others turned out to be true. Can you tell what is real and what is conspiracy cap?"
               }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/CreateQuestion200" },
-          "400": { "$ref": "#/components/responses/CreateQuestion400" }
+          "200": {
+            "$ref": "#/components/responses/CreateQuestion200"
+          },
+          "400": {
+            "$ref": "#/components/responses/CreateQuestion400"
+          }
         },
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
@@ -58,7 +64,7 @@
         }
       }
     },
-    "/v1/questions/:questionId/answer": {
+    "/v1/questions/{questionId}/answer": {
       "x-zuplo-path": { "pathMode": "open-api" },
       "post": {
         "summary": "Answer Question",
@@ -70,7 +76,7 @@
             "application/json": {
               "schema": { "$ref": "#/components/schemas/AnswerQuestionRequest" },
               "example": {
-                "userAddress": "0x1234567890abcdef",
+                "userAddress": "CHoMP5YdLEJ62kq9oibKbNDkBCgakQPqQLSgkDHyC2D9",
                 "firstOrderOptionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
                 "secondOrderOptionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2",
                 "secondOrderOptionEstimate": 0.75
@@ -79,8 +85,12 @@
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/AnswerQuestion200" },
-          "400": { "$ref": "#/components/responses/AnswerQuestion400" }
+          "200": {
+            "$ref": "#/components/responses/AnswerQuestion200"
+          },
+          "400": {
+            "$ref": "#/components/responses/AnswerQuestion400"
+          }
         },
         "x-zuplo-route": {
           "corsPolicy": "none",
@@ -93,15 +103,19 @@
         }
       }
     },
-    "/v1/questions/:questionId": {
+    "/v1/questions/{questionId}": {
       "x-zuplo-path": { "pathMode": "open-api" },
       "get": {
         "summary": "Get Question Results",
         "description": "Retrieve answers and best option for the specified question.",
         "operationId": "b7d8f1f2-1234-4cde-9123-abcdef012345",
         "responses": {
-          "200": { "$ref": "#/components/responses/GetQuestion200" },
-          "400": { "$ref": "#/components/responses/InvalidQuestion400" }
+          "200": {
+            "$ref": "#/components/responses/GetQuestion200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidQuestion400"
+          }
         },
         "x-zuplo-route": {
           "corsPolicy": "none",
@@ -115,7 +129,7 @@
       },
       "put": {
         "summary": "Update Question",
-        "description": "Update the endTimestamp or set the correct option for a question.",
+        "description": "Update the resolvesAt timestamp for a question.",
         "operationId": "e4c2d3a4-5678-4fab-9abc-def012345678",
         "requestBody": {
           "required": true,
@@ -123,14 +137,15 @@
             "application/json": {
               "schema": { "$ref": "#/components/schemas/UpdateQuestionRequest" },
               "example": {
-                "endTimestamp": "2025-05-02T00:00:00Z",
-                "correctOptionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83"
+                "resolvesAt": "2025-05-03T00:00:00Z"
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Question updated" },
+          "200": {
+            "$ref": "#/components/responses/UpdateQuestion200"
+          },
           "400": { "$ref": "#/components/responses/UpdateQuestion400" }
         },
         "x-zuplo-route": {
@@ -152,7 +167,7 @@
         "title": "Array of question options",
         "properties": {
           "title": { "type": "string", "description": "The text of the option" },
-          "index": { "type": "integer", "minimum": 0, "description": "Sequential integer starting at 0" }
+          "index": { "type": "integer", "minimum": 0, "description": "Sequential integer starting at 0. Typically corresponds to the order that the option will be displayed in the UI." }
         },
         "required": ["title", "index"],
         "additionalProperties": false
@@ -161,10 +176,10 @@
         "type": "object",
         "title": "OptionOutput",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
+          "optionId": { "type": "string", "format": "uuid" },
           "index": { "type": "integer", "minimum": 0, "description": "Sequential integer starting at 0" }
         },
-        "required": ["id", "index"],
+        "required": ["optionId", "index"],
         "additionalProperties": false
       },
       "CreateQuestionRequest": {
@@ -180,28 +195,28 @@
             "maxItems": 4,
             "description": "Must contain exactly 2 or 4 options."
           },
+          "activeAt": { "type": "string", "format": "date-time", "description": "UTC timestamp for when voting starts." },
+          "resolvesAt": { "type": "string", "format": "date-time", "description": "UTC timestamp for when voting ends." },
           "rules": { "type": "string" },
           "description": { "type": "string" },
           "imageUrl": { "type": "string", "format": "uri" },
-          "startTimestamp": { "type": "string", "format": "date-time", "description": "UTC timestamp for when voting starts." },
-          "endTimestamp": { "type": "string", "format": "date-time", "description": "UTC timestamp for when voting ends." },
           "onChainAddress": { "type": "string" }
         },
-        "required": ["title", "options"],
+        "required": ["title", "options", "activeAt"],
         "additionalProperties": false
       },
       "CreateQuestionResponse": {
         "type": "object",
         "title": "CreateQuestionResponse",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
+          "questionId": { "type": "string", "format": "uuid" },
           "options": {
             "title": "Options array",
             "type": "array",
             "items": { "$ref": "#/components/schemas/OptionOutput" }
           }
         },
-        "required": ["id", "options"],
+        "required": ["questionId", "options"],
         "additionalProperties": false
       },
       "AnswerQuestionRequest": {
@@ -210,7 +225,7 @@
         "properties": {
           "userAddress": { "type": "string" },
           "firstOrderOptionId": { "type": "string", "format": "uuid" },
-          "secondOrderOptionId": { "type": "string", "format": "uuid" },
+          "secondOrderOptionId": { "type": "string", "format": "uuid", "description": "firstOrderOptionId and secondOrderOptionId can be the same or different. In CHOMP, secondOrderOptionId is randomized, but this is not a requirement of the API." },
           "secondOrderOptionEstimate": { "type": "number", "minimum": 0, "maximum": 1 }
         },
         "required": ["userAddress", "firstOrderOptionId", "secondOrderOptionId", "secondOrderOptionEstimate"],
@@ -219,35 +234,44 @@
       "AnswerQuestionResponse": {
         "type": "object",
         "title": "AnswerQuestionResponse",
-        "properties": { "id": { "type": "string", "format": "uuid" } },
-        "required": ["id"],
+        "properties": { "answerId": { "type": "string", "format": "uuid" } },
+        "required": ["answerId"],
         "additionalProperties": false
       },
       "UpdateQuestionRequest": {
         "type": "object",
         "title": "UpdateQuestionRequest",
         "properties": {
-          "endTimestamp": { "type": "string", "format": "date-time", "description": "UTC timestamp for when voting ends." },
-          "correctOptionId": { "type": "string", "format": "uuid", "description": "Sets the correct option for the question." }
+          "resolvesAt": { "type": "string", "format": "date-time", "description": "UTC timestamp for when voting ends." }
         },
+        "required": ["resolvesAt"],
         "additionalProperties": false
       },
-      "Answer": {
+      "UpdateQuestionResponse": {
         "type": "object",
-        "title": "Answer",
+        "title": "UpdateQuestionResponse",
+        "properties": { "questionId": { "type": "string", "format": "uuid" } },
+        "required": ["questionId"],
+        "additionalProperties": false
+      },
+      "AnswerResult": {
+        "type": "object",
+        "title": "AnswerResult",
         "properties": {
           "firstOrderOptionId": { "type": "string", "format": "uuid" },
           "secondOrderOptionId": { "type": "string", "format": "uuid" },
-          "secondOrderOptionEstimate": { "type": "number", "minimum": 0, "maximum": 1 }
+          "secondOrderOptionEstimate": { "type": "number", "minimum": 0, "maximum": 1 },
+          "answerScore": { "type": "number", "minimum": 0, "maximum": 2 },
+          "answerId": { "type": "string", "format": "uuid" }
         },
-        "required": ["firstOrderOptionId", "secondOrderOptionId", "secondOrderOptionEstimate"],
+        "required": ["firstOrderOptionId", "secondOrderOptionId", "secondOrderOptionEstimate", "answerScore", "answerId"],
         "additionalProperties": false
       },
       "GetQuestionResponse": {
         "type": "object",
         "title": "GetQuestionResponse",
         "properties": {
-          "answers": { "type": "array", "items": { "$ref": "#/components/schemas/Answer" } },
+          "answers": { "type": "array", "items": { "$ref": "#/components/schemas/AnswerResult" } },
           "bestOption": { "type": "string", "format": "uuid" }
         },
         "required": ["answers", "bestOption"],
@@ -265,38 +289,190 @@
       }
     },
     "responses": {
-      "CreateQuestion200": { "$ref": "#/components/responses/CreateQuestion200" },
-      "CreateQuestion400": { "$ref": "#/components/responses/CreateQuestion400" },
-      "AnswerQuestion200": { "$ref": "#/components/responses/AnswerQuestion200" },
-      "AnswerQuestion400": { "$ref": "#/components/responses/AnswerQuestion400" },
-      "UpdateQuestion400": {
-        "description": "Invalid update request",
+      "CreateQuestion200": {
+        "description": "Question created successfully",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": { "$ref": "#/components/schemas/CreateQuestionResponse" },
             "examples": {
-              "invalid_end_timestamp_after": {
-                "summary": "endTimestamp must be after startTimestamp",
-                "value": { "error": "invalid_end_timestamp", "message": "endTimestamp must be after startTimestamp" }
-              },
-              "invalid_end_timestamp_future": {
-                "summary": "endTimestamp must be in the future",
-                "value": { "error": "invalid_end_timestamp", "message": "endTimestamp must be in the future" }
-              },
-              "invalid_option_id": {
-                "summary": "Option ID does not exist",
-                "value": { "error": "invalid_option_id", "message": "option ID does not exist" }
-              },
-              "cannot_set_correct": {
-                "summary": "Cannot set correct option Id",
-                "value": { "error": "cannot_set_correct", "message": "Cannot set correct option Id" }
+              "default": {
+                "summary": "Successful creation",
+                "value": {
+                  "questionId": "71f3d63e-ebe6-4f77-9d7f-57d948e9c410",
+                  "options": [
+                    { "optionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83", "index": 0 },
+                    { "optionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2", "index": 1 }
+                  ]
+                }
               }
             }
           }
         }
       },
-      "GetQuestion200": { "$ref": "#/components/responses/GetQuestion200" },
-      "InvalidQuestion400": { "$ref": "#/components/responses/InvalidQuestion400" }
+      "CreateQuestion400": {
+        "description": "Invalid question creation request",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "examples": {
+              "option_invalid": {
+                "summary": "Option missing title or index",
+                "value": { "error": "option_invalid", "message": "Each option must include both title and index" }
+              },
+              "question_invalid_title": {
+                "summary": "Title must be defined",
+                "value": { "error": "question_invalid", "message": "Title must be defined" }
+              },
+              "question_invalid_options_count": {
+                "summary": "Exactly 2 or 4 options must be provided",
+                "value": { "error": "question_invalid", "message": "Exactly 2 or 4 options must be provided" }
+              },
+              "question_invalid_resolves_at": {
+                "summary": "resolvesAt must be after activeAt",
+                "value": { "error": "question_invalid", "message": "resolvesAt must be after activeAt" }
+              }
+            }
+          }
+        }
+      },
+      "AnswerQuestion200": {
+        "description": "Answer submitted successfully",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/AnswerQuestionResponse" },
+            "examples": {
+              "default": {
+                "summary": "Successful answer",
+                "value": {
+                  "answerId": "d3b082a2-1e21-4a8c-9d03-84b8f9cf0660"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AnswerQuestion400": {
+        "description": "Invalid answer submission",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "examples": {
+              "answer_invalid_missing": {
+                "summary": "Missing required fields",
+                "value": { "error": "answer_invalid", "message": "userAddress, firstOrderOptionId, secondOrderOptionId, and secondOrderOptionEstimate are required" }
+              },
+              "answer_invalid_option_mismatch": {
+                "summary": "Option IDs do not belong to the same question",
+                "value": { "error": "answer_invalid", "message": "firstOrderOptionId does not belong to the same question as secondOrderOptionId" }
+              },
+              "answer_invalid_estimate_range": {
+                "summary": "secondOrderOptionEstimate must be 0-1",
+                "value": { "error": "answer_invalid", "message": "secondOrderOptionEstimate must be between 0 and 1 inclusive" }
+              },
+              "answer_invalid_duplicate": {
+                "summary": "User already answered",
+                "value": { "error": "answer_invalid", "message": "userAddress has already submitted an answer for this question" }
+              },
+              "answer_invalid_resolved": {
+                "summary": "Question already resolved",
+                "value": { "error": "answer_invalid", "message": "Cannot answer question that has already resolved" }
+              },
+              "option_invalid": {
+                "summary": "Invalid option IDs",
+                "value": { "error": "option_invalid", "message": "firstOrderOptionId or secondOrderOptionId is not a valid id" }
+              },
+              "user_invalid": {
+                "summary": "User account error",
+                "value": { "error": "user_invalid", "message": "Could not find or create user account" }
+              }
+            }
+          }
+        }
+      },
+      "UpdateQuestion200": {
+        "description": "Question updated successfully",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/UpdateQuestionResponse" },
+            "examples": {
+              "default": {
+                "summary": "Successful update",
+                "value": {
+                  "questionId": "71f3d63e-ebe6-4f77-9d7f-57d948e9c410"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateQuestion400": {
+        "description": "Invalid question update request",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "examples": {
+              "question_invalid_not_found": {
+                "summary": "Question not found",
+                "value": { "error": "question_invalid", "message": "There is no question with that ID" }
+              },
+              "question_invalid_resolves_at_sequence": {
+                "summary": "resolvesAt must be after activeAt",
+                "value": { "error": "question_invalid", "message": "resolvesAt must be after activeAt" }
+              },
+              "question_invalid_resolves_at_future": {
+                "summary": "resolvesAt must be in the future",
+                "value": { "error": "question_invalid", "message": "resolvesAt must be in the future" }
+              }
+            }
+          }
+        }
+      },
+      "GetQuestion200": {
+        "description": "Question results",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/GetQuestionResponse" },
+            "examples": {
+              "default": {
+                "summary": "Example results",
+                "value": {
+                  "answers": [
+                    {
+                      "firstOrderOptionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
+                      "secondOrderOptionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
+                      "secondOrderOptionEstimate": 0.7,
+                      "answerScore": 1.5,
+                      "answerId": "d3b082a2-1e21-4a8c-9d03-84b8f9cf0660"
+                    },
+                    {
+                      "firstOrderOptionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2",
+                      "secondOrderOptionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2",
+                      "secondOrderOptionEstimate": 0.6,
+                      "answerScore": 2,
+                      "answerId": "b7e692c4-5a5d-4855-906d-38ba18268504"
+                    }
+                  ],
+                  "bestOption": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InvalidQuestion400": {
+        "description": "Invalid question ID",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "examples": {
+              "invalid_question": {
+                "summary": "Question not found",
+                "value": { "error": "invalid_question", "message": "No question exists with this id" }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
