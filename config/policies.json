@@ -41,7 +41,7 @@
         "options": {
           "headers": [
             {
-              "name": "set-backend-secret",
+              "name": "backend-secret",
               "value": "$env(BACKEND_SECRET)"
             }
           ]

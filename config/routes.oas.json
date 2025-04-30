@@ -11,11 +11,15 @@
     }
   },
   "servers": [
-    { "url": "https://api.chomp.games" }
+    {
+      "url": "https://api.chomp.games"
+    }
   ],
   "paths": {
     "/v1/questions": {
-      "x-zuplo-path": { "pathMode": "open-api" },
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
       "post": {
         "summary": "Create Question",
         "description": "Create a new Question that can be resolved by CHOMP's oracle.",
@@ -24,15 +28,23 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateQuestionRequest" },
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuestionRequest"
+              },
               "example": {
                 "title": "The CIA ran a mind control project called MK-Ultra.",
                 "options": [
-                  { "title": "Conspiracy", "index": 0 },
-                  { "title": "Real", "index": 1 }
+                  {
+                    "title": "Conspiracy",
+                    "index": 0
+                  },
+                  {
+                    "title": "Real",
+                    "index": 1
+                  }
                 ],
                 "activeAt": "2025-05-01T00:00:00Z",
-                "resolvesAt": "2025-05-02T00:00:00Z",
+                "resolveAt": "2025-05-02T00:00:00Z",
                 "description": "From lizard people to leaked documents, some theories are pure fiction—others turned out to be true. Can you tell what is real and what is conspiracy cap?"
               }
             }
@@ -51,13 +63,15 @@
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
-            "options": { "baseUrl": "${env.BASE_URL}" }
+            "options": {
+              "baseUrl": "${env.BASE_URL}"
+            }
           },
           "policies": {
             "inbound": [
+              "api-key-inbound",
               "rate-limit-inbound",
               "add-user-metadata",
-              "api-key-inbound",
               "set-headers-inbound"
             ]
           }
@@ -65,7 +79,9 @@
       }
     },
     "/v1/questions/{questionId}/answer": {
-      "x-zuplo-path": { "pathMode": "open-api" },
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
       "post": {
         "summary": "Answer Question",
         "description": "Submit an answer for the given question.",
@@ -74,7 +90,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/AnswerQuestionRequest" },
+              "schema": {
+                "$ref": "#/components/schemas/AnswerQuestionRequest"
+              },
               "example": {
                 "userAddress": "CHoMP5YdLEJ62kq9oibKbNDkBCgakQPqQLSgkDHyC2D9",
                 "firstOrderOptionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
@@ -97,14 +115,24 @@
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
-            "options": { "baseUrl": "https://api.chomp.games" }
+            "options": {
+              "baseUrl": "https://api.chomp.games"
+            }
           },
-          "policies": { "inbound": ["rate-limit-inbound", "add-user-metadata", "api-key-inbound"] }
+          "policies": {
+            "inbound": [
+              "rate-limit-inbound",
+              "add-user-metadata",
+              "api-key-inbound"
+            ]
+          }
         }
       }
     },
     "/v1/questions/{questionId}": {
-      "x-zuplo-path": { "pathMode": "open-api" },
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
       "get": {
         "summary": "Get Question Results",
         "description": "Retrieve answers and best option for the specified question.",
@@ -122,22 +150,32 @@
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
-            "options": { "baseUrl": "https://api.chomp.games" }
+            "options": {
+              "baseUrl": "https://api.chomp.games"
+            }
           },
-          "policies": { "inbound": ["rate-limit-inbound", "add-user-metadata", "api-key-inbound"] }
+          "policies": {
+            "inbound": [
+              "rate-limit-inbound",
+              "add-user-metadata",
+              "api-key-inbound"
+            ]
+          }
         }
       },
       "put": {
         "summary": "Update Question",
-        "description": "Update the resolvesAt timestamp for a question.",
+        "description": "Update the resolveAt timestamp for a question.",
         "operationId": "e4c2d3a4-5678-4fab-9abc-def012345678",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/UpdateQuestionRequest" },
+              "schema": {
+                "$ref": "#/components/schemas/UpdateQuestionRequest"
+              },
               "example": {
-                "resolvesAt": "2025-05-03T00:00:00Z"
+                "resolveAt": "2025-05-03T00:00:00Z"
               }
             }
           }
@@ -146,16 +184,26 @@
           "200": {
             "$ref": "#/components/responses/UpdateQuestion200"
           },
-          "400": { "$ref": "#/components/responses/UpdateQuestion400" }
+          "400": {
+            "$ref": "#/components/responses/UpdateQuestion400"
+          }
         },
         "x-zuplo-route": {
           "corsPolicy": "none",
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
-            "options": { "baseUrl": "https://api.chomp.games" }
+            "options": {
+              "baseUrl": "https://api.chomp.games"
+            }
           },
-          "policies": { "inbound": ["rate-limit-inbound", "add-user-metadata", "api-key-inbound"] }
+          "policies": {
+            "inbound": [
+              "rate-limit-inbound",
+              "add-user-metadata",
+              "api-key-inbound"
+            ]
+          }
         }
       }
     }
@@ -166,125 +214,260 @@
         "type": "object",
         "title": "Array of question options",
         "properties": {
-          "title": { "type": "string", "description": "The text of the option" },
-          "index": { "type": "integer", "minimum": 0, "description": "Sequential integer starting at 0. Typically corresponds to the order that the option will be displayed in the UI." }
+          "title": {
+            "type": "string",
+            "description": "The text of the option"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sequential integer starting at 0. Typically corresponds to the order that the option will be displayed in the UI."
+          }
         },
-        "required": ["title", "index"],
+        "required": [
+          "title",
+          "index"
+        ],
         "additionalProperties": false
       },
       "OptionOutput": {
         "type": "object",
         "title": "OptionOutput",
         "properties": {
-          "optionId": { "type": "string", "format": "uuid" },
-          "index": { "type": "integer", "minimum": 0, "description": "Sequential integer starting at 0" }
+          "optionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sequential integer starting at 0"
+          }
         },
-        "required": ["optionId", "index"],
+        "required": [
+          "optionId",
+          "index"
+        ],
         "additionalProperties": false
       },
       "CreateQuestionRequest": {
         "type": "object",
         "title": "CreateQuestionRequest",
         "properties": {
-          "title": { "type": "string", "description": "The text of the question" },
+          "title": {
+            "type": "string",
+            "description": "The text of the question"
+          },
           "options": {
             "title": "Options array",
             "type": "array",
-            "items": { "$ref": "#/components/schemas/OptionInput" },
+            "items": {
+              "$ref": "#/components/schemas/OptionInput"
+            },
             "minItems": 2,
             "maxItems": 4,
             "description": "Must contain exactly 2 or 4 options."
           },
-          "activeAt": { "type": "string", "format": "date-time", "description": "UTC timestamp for when voting starts." },
-          "resolvesAt": { "type": "string", "format": "date-time", "description": "UTC timestamp for when voting ends." },
-          "rules": { "type": "string" },
-          "description": { "type": "string" },
-          "imageUrl": { "type": "string", "format": "uri" },
-          "onChainAddress": { "type": "string" }
+          "activeAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting starts."
+          },
+          "resolveAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting ends."
+          },
+          "rules": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "onChainAddress": {
+            "type": "string"
+          }
         },
-        "required": ["title", "options", "activeAt"],
+        "required": [
+          "title",
+          "options",
+          "activeAt"
+        ],
         "additionalProperties": false
       },
       "CreateQuestionResponse": {
         "type": "object",
         "title": "CreateQuestionResponse",
         "properties": {
-          "questionId": { "type": "string", "format": "uuid" },
+          "questionId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "options": {
             "title": "Options array",
             "type": "array",
-            "items": { "$ref": "#/components/schemas/OptionOutput" }
+            "items": {
+              "$ref": "#/components/schemas/OptionOutput"
+            }
           }
         },
-        "required": ["questionId", "options"],
+        "required": [
+          "questionId",
+          "options"
+        ],
         "additionalProperties": false
       },
       "AnswerQuestionRequest": {
         "type": "object",
         "title": "AnswerQuestionRequest",
         "properties": {
-          "userAddress": { "type": "string" },
-          "firstOrderOptionId": { "type": "string", "format": "uuid" },
-          "secondOrderOptionId": { "type": "string", "format": "uuid", "description": "firstOrderOptionId and secondOrderOptionId can be the same or different. In CHOMP, secondOrderOptionId is randomized, but this is not a requirement of the API." },
-          "secondOrderOptionEstimate": { "type": "number", "minimum": 0, "maximum": 1 }
+          "userAddress": {
+            "type": "string"
+          },
+          "firstOrderOptionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "secondOrderOptionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "firstOrderOptionId and secondOrderOptionId can be the same or different. In CHOMP, secondOrderOptionId is randomized, but this is not a requirement of the API."
+          },
+          "secondOrderOptionEstimate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
         },
-        "required": ["userAddress", "firstOrderOptionId", "secondOrderOptionId", "secondOrderOptionEstimate"],
+        "required": [
+          "userAddress",
+          "firstOrderOptionId",
+          "secondOrderOptionId",
+          "secondOrderOptionEstimate"
+        ],
         "additionalProperties": false
       },
       "AnswerQuestionResponse": {
         "type": "object",
         "title": "AnswerQuestionResponse",
-        "properties": { "answerId": { "type": "string", "format": "uuid" } },
-        "required": ["answerId"],
+        "properties": {
+          "answerId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "answerId"
+        ],
         "additionalProperties": false
       },
       "UpdateQuestionRequest": {
         "type": "object",
         "title": "UpdateQuestionRequest",
         "properties": {
-          "resolvesAt": { "type": "string", "format": "date-time", "description": "UTC timestamp for when voting ends." }
+          "resolveAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting ends."
+          }
         },
-        "required": ["resolvesAt"],
+        "required": [
+          "resolveAt"
+        ],
         "additionalProperties": false
       },
       "UpdateQuestionResponse": {
         "type": "object",
         "title": "UpdateQuestionResponse",
-        "properties": { "questionId": { "type": "string", "format": "uuid" } },
-        "required": ["questionId"],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "questionId"
+        ],
         "additionalProperties": false
       },
       "AnswerResult": {
         "type": "object",
         "title": "AnswerResult",
         "properties": {
-          "firstOrderOptionId": { "type": "string", "format": "uuid" },
-          "secondOrderOptionId": { "type": "string", "format": "uuid" },
-          "secondOrderOptionEstimate": { "type": "number", "minimum": 0, "maximum": 1 },
-          "answerScore": { "type": "number", "minimum": 0, "maximum": 2 },
-          "answerId": { "type": "string", "format": "uuid" }
+          "firstOrderOptionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "secondOrderOptionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "secondOrderOptionEstimate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "answerScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2
+          },
+          "answerId": {
+            "type": "string",
+            "format": "uuid"
+          }
         },
-        "required": ["firstOrderOptionId", "secondOrderOptionId", "secondOrderOptionEstimate", "answerScore", "answerId"],
+        "required": [
+          "firstOrderOptionId",
+          "secondOrderOptionId",
+          "secondOrderOptionEstimate",
+          "answerScore",
+          "answerId"
+        ],
         "additionalProperties": false
       },
       "GetQuestionResponse": {
         "type": "object",
         "title": "GetQuestionResponse",
         "properties": {
-          "answers": { "type": "array", "items": { "$ref": "#/components/schemas/AnswerResult" } },
-          "bestOption": { "type": "string", "format": "uuid" }
+          "answers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnswerResult"
+            }
+          },
+          "bestOption": {
+            "type": "string",
+            "format": "uuid"
+          }
         },
-        "required": ["answers", "bestOption"],
+        "required": [
+          "answers",
+          "bestOption"
+        ],
         "additionalProperties": false
       },
       "ErrorResponse": {
         "type": "object",
         "title": "ErrorResponse",
         "properties": {
-          "error": { "type": "string", "description": "Machine readable error code" },
-          "message": { "type": "string", "description": "Human readable error description" }
+          "error": {
+            "type": "string",
+            "description": "Machine readable error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human readable error description"
+          }
         },
-        "required": ["error", "message"],
+        "required": [
+          "error",
+          "message"
+        ],
         "additionalProperties": false
       }
     },
@@ -293,15 +476,23 @@
         "description": "Question created successfully",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/CreateQuestionResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/CreateQuestionResponse"
+            },
             "examples": {
               "default": {
                 "summary": "Successful creation",
                 "value": {
                   "questionId": "71f3d63e-ebe6-4f77-9d7f-57d948e9c410",
                   "options": [
-                    { "optionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83", "index": 0 },
-                    { "optionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2", "index": 1 }
+                    {
+                      "optionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
+                      "index": 0
+                    },
+                    {
+                      "optionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2",
+                      "index": 1
+                    }
                   ]
                 }
               }
@@ -313,23 +504,37 @@
         "description": "Invalid question creation request",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "examples": {
               "option_invalid": {
                 "summary": "Option missing title or index",
-                "value": { "error": "option_invalid", "message": "Each option must include both title and index" }
+                "value": {
+                  "error": "option_invalid",
+                  "message": "Each option must include both title and index"
+                }
               },
               "question_invalid_title": {
                 "summary": "Title must be defined",
-                "value": { "error": "question_invalid", "message": "Title must be defined" }
+                "value": {
+                  "error": "question_invalid",
+                  "message": "Title must be defined"
+                }
               },
               "question_invalid_options_count": {
                 "summary": "Exactly 2 or 4 options must be provided",
-                "value": { "error": "question_invalid", "message": "Exactly 2 or 4 options must be provided" }
+                "value": {
+                  "error": "question_invalid",
+                  "message": "Exactly 2 or 4 options must be provided"
+                }
               },
               "question_invalid_resolves_at": {
-                "summary": "resolvesAt must be after activeAt",
-                "value": { "error": "question_invalid", "message": "resolvesAt must be after activeAt" }
+                "summary": "resolveAt must be after activeAt",
+                "value": {
+                  "error": "question_invalid",
+                  "message": "resolveAt must be after activeAt"
+                }
               }
             }
           }
@@ -339,7 +544,9 @@
         "description": "Answer submitted successfully",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/AnswerQuestionResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/AnswerQuestionResponse"
+            },
             "examples": {
               "default": {
                 "summary": "Successful answer",
@@ -355,35 +562,58 @@
         "description": "Invalid answer submission",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "examples": {
               "answer_invalid_missing": {
                 "summary": "Missing required fields",
-                "value": { "error": "answer_invalid", "message": "userAddress, firstOrderOptionId, secondOrderOptionId, and secondOrderOptionEstimate are required" }
+                "value": {
+                  "error": "answer_invalid",
+                  "message": "userAddress, firstOrderOptionId, secondOrderOptionId, and secondOrderOptionEstimate are required"
+                }
               },
               "answer_invalid_option_mismatch": {
                 "summary": "Option IDs do not belong to the same question",
-                "value": { "error": "answer_invalid", "message": "firstOrderOptionId does not belong to the same question as secondOrderOptionId" }
+                "value": {
+                  "error": "answer_invalid",
+                  "message": "firstOrderOptionId does not belong to the same question as secondOrderOptionId"
+                }
               },
               "answer_invalid_estimate_range": {
                 "summary": "secondOrderOptionEstimate must be 0-1",
-                "value": { "error": "answer_invalid", "message": "secondOrderOptionEstimate must be between 0 and 1 inclusive" }
+                "value": {
+                  "error": "answer_invalid",
+                  "message": "secondOrderOptionEstimate must be between 0 and 1 inclusive"
+                }
               },
               "answer_invalid_duplicate": {
                 "summary": "User already answered",
-                "value": { "error": "answer_invalid", "message": "userAddress has already submitted an answer for this question" }
+                "value": {
+                  "error": "answer_invalid",
+                  "message": "userAddress has already submitted an answer for this question"
+                }
               },
               "answer_invalid_resolved": {
                 "summary": "Question already resolved",
-                "value": { "error": "answer_invalid", "message": "Cannot answer question that has already resolved" }
+                "value": {
+                  "error": "answer_invalid",
+                  "message": "Cannot answer question that has already resolved"
+                }
               },
               "option_invalid": {
                 "summary": "Invalid option IDs",
-                "value": { "error": "option_invalid", "message": "firstOrderOptionId or secondOrderOptionId is not a valid id" }
+                "value": {
+                  "error": "option_invalid",
+                  "message": "firstOrderOptionId or secondOrderOptionId is not a valid id"
+                }
               },
               "user_invalid": {
                 "summary": "User account error",
-                "value": { "error": "user_invalid", "message": "Could not find or create user account" }
+                "value": {
+                  "error": "user_invalid",
+                  "message": "Could not find or create user account"
+                }
               }
             }
           }
@@ -393,7 +623,9 @@
         "description": "Question updated successfully",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/UpdateQuestionResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/UpdateQuestionResponse"
+            },
             "examples": {
               "default": {
                 "summary": "Successful update",
@@ -409,19 +641,30 @@
         "description": "Invalid question update request",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "examples": {
               "question_invalid_not_found": {
                 "summary": "Question not found",
-                "value": { "error": "question_invalid", "message": "There is no question with that ID" }
+                "value": {
+                  "error": "question_invalid",
+                  "message": "There is no question with that ID"
+                }
               },
               "question_invalid_resolves_at_sequence": {
-                "summary": "resolvesAt must be after activeAt",
-                "value": { "error": "question_invalid", "message": "resolvesAt must be after activeAt" }
+                "summary": "resolveAt must be after activeAt",
+                "value": {
+                  "error": "question_invalid",
+                  "message": "resolveAt must be after activeAt"
+                }
               },
               "question_invalid_resolves_at_future": {
-                "summary": "resolvesAt must be in the future",
-                "value": { "error": "question_invalid", "message": "resolvesAt must be in the future" }
+                "summary": "resolveAt must be in the future",
+                "value": {
+                  "error": "question_invalid",
+                  "message": "resolveAt must be in the future"
+                }
               }
             }
           }
@@ -431,7 +674,9 @@
         "description": "Question results",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/GetQuestionResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/GetQuestionResponse"
+            },
             "examples": {
               "default": {
                 "summary": "Example results",
@@ -463,11 +708,16 @@
         "description": "Invalid question ID",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "examples": {
               "invalid_question": {
                 "summary": "Question not found",
-                "value": { "error": "invalid_question", "message": "No question exists with this id" }
+                "value": {
+                  "error": "invalid_question",
+                  "message": "No question exists with this id"
+                }
               }
             }
           }
