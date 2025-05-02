@@ -84,7 +84,7 @@
       },
       "post": {
         "summary": "Answer Question",
-        "description": "Submit an answer for the given question.",
+        "description": "Submit an answer for the given question",
         "operationId": "5f1a5f6a-fa1b-446b-b18c-790b68035623",
         "requestBody": {
           "required": true,
