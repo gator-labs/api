@@ -135,7 +135,7 @@
       },
       "get": {
         "summary": "Get Question Results",
-        "description": "Retrieve answers and best option for the specified question.",
+        "description": "Retrieve answers, option scores, and best option for the specified question.",
         "operationId": "b7d8f1f2-1234-4cde-9123-abcdef012345",
         "responses": {
           "200": {
@@ -440,6 +440,26 @@
               "$ref": "#/components/schemas/AnswerResult"
             }
           },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "optionId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "optionScore": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "optionId",
+                "optionScore"
+              ],
+              "additionalProperties": false
+            }
+          },
           "bestOption": {
             "type": "string",
             "format": "uuid"
@@ -447,6 +467,7 @@
         },
         "required": [
           "answers",
+          "options",
           "bestOption"
         ],
         "additionalProperties": false
@@ -697,6 +718,16 @@
                       "answerId": "b7e692c4-5a5d-4855-906d-38ba18268504"
                     }
                   ],
+                  "options": [
+                    {
+                      "optionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
+                      "optionScore": 1.7
+                    },
+                    {
+                      "optionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2",
+                      "optionScore": 2
+                    }
+                  ],
                   "bestOption": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83"
                 }
               }
@@ -712,10 +743,10 @@
               "$ref": "#/components/schemas/ErrorResponse"
             },
             "examples": {
-              "invalid_question": {
+              "question_invalid": {
                 "summary": "Question not found",
                 "value": {
-                  "error": "invalid_question",
+                  "error": "question_invalid",
                   "message": "No question exists with this id"
                 }
               }
