@@ -16,13 +16,13 @@
     }
   ],
   "paths": {
-    "/v1/questions": {
+       "/v1/questions": {
       "x-zuplo-path": {
         "pathMode": "open-api"
       },
       "post": {
         "summary": "Create Question",
-        "description": "Create a new Question that can be resolved by CHOMP's oracle.",
+        "description": "Create a new Question that can be resolved by CHOMP's oracle. Indexes must be integers greater than 0.",
         "operationId": "6bd16c9b-fff0-4d2b-82ca-bf16adc63a99",
         "requestBody": {
           "required": true,
@@ -36,11 +36,11 @@
                 "options": [
                   {
                     "title": "Conspiracy",
-                    "index": 0
+                    "index": 1
                   },
                   {
                     "title": "Real",
-                    "index": 1
+                    "index": 2
                   }
                 ],
                 "activeAt": "2025-05-01T00:00:00Z",
@@ -76,6 +76,29 @@
             ]
           }
         }
+      },
+      "get": {
+        "summary": "Get Questions",
+        "description": "",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "${env.BASE_URL}"
+            }
+          },
+          "policies": {
+            "inbound": [
+              "api-key-inbound",
+              "rate-limit-inbound",
+              "add-user-metadata",
+              "set-headers-inbound"
+            ]
+          }
+        },
+        "operationId": "4d46e8f4-df3a-4b3f-a54b-3b248c18c2ef"
       }
     },
     "/v1/questions/{questionId}/answer": {
@@ -111,19 +134,20 @@
           }
         },
         "x-zuplo-route": {
-          "corsPolicy": "none",
+          "corsPolicy": "anything-goes",
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "baseUrl": "https://api.chomp.games"
+              "baseUrl": "${env.BASE_URL}"
             }
           },
           "policies": {
             "inbound": [
+              "api-key-inbound",
               "rate-limit-inbound",
               "add-user-metadata",
-              "api-key-inbound"
+              "set-headers-inbound"
             ]
           }
         }
@@ -132,36 +156,6 @@
     "/v1/questions/{questionId}": {
       "x-zuplo-path": {
         "pathMode": "open-api"
-      },
-      "get": {
-        "summary": "Get Question Results",
-        "description": "Retrieve answers, option scores, and best option for the specified question.",
-        "operationId": "b7d8f1f2-1234-4cde-9123-abcdef012345",
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/GetQuestion200"
-          },
-          "400": {
-            "$ref": "#/components/responses/InvalidQuestion400"
-          }
-        },
-        "x-zuplo-route": {
-          "corsPolicy": "none",
-          "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "baseUrl": "https://api.chomp.games"
-            }
-          },
-          "policies": {
-            "inbound": [
-              "rate-limit-inbound",
-              "add-user-metadata",
-              "api-key-inbound"
-            ]
-          }
-        }
       },
       "put": {
         "summary": "Update Question",
@@ -189,19 +183,51 @@
           }
         },
         "x-zuplo-route": {
-          "corsPolicy": "none",
+          "corsPolicy": "anything-goes",
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "baseUrl": "https://api.chomp.games"
+              "baseUrl": "${env.BASE_URL}"
             }
           },
           "policies": {
             "inbound": [
+              "api-key-inbound",
               "rate-limit-inbound",
               "add-user-metadata",
-              "api-key-inbound"
+              "set-headers-inbound"
+            ]
+          }
+        }
+      },
+      "get": {
+        "summary": "Get Question & Results",
+        "description": "Retrieve answers, option scores, and best option for the specified question. answerScore is 0 to 2. optionScore is -1 to 1.",
+        "operationId": "b7d8f1f2-1234-4cde-9123-abcdef012345",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetQuestion200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidQuestion400"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "${env.BASE_URL}"
+            }
+          },
+          "policies": {
+            "inbound": [
+              "api-key-inbound",
+              "rate-limit-inbound",
+              "add-user-metadata",
+              "set-headers-inbound"
             ]
           }
         }
@@ -721,11 +747,11 @@
                   "options": [
                     {
                       "optionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
-                      "optionScore": 1.7
+                      "optionScore": 0.9
                     },
                     {
                       "optionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2",
-                      "optionScore": 2
+                      "optionScore": -0.1
                     }
                   ],
                   "bestOption": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83"
