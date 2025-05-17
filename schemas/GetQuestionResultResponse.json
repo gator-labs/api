@@ -1,0 +1,72 @@
+{
+    "type": "object",
+    "title": "GetQuestionResultResponse",
+    "properties": {
+        "questionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier for the question"
+        },
+        "title": {
+            "type": "string",
+            "description": "The text of the question"
+        },
+        "description": {
+            "type": "string",
+            "description": "A detailed description of the question"
+        },
+        "activeAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting starts."
+        },
+        "resolveAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting ends."
+        },
+        "answers": {
+            "type": "array",
+            "items": {
+                "$ref": "./AnswerResult.json"
+            }
+        },
+        "options": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "The text of the option"
+                    },
+                    "optionId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "optionScore": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "optionId",
+                    "optionScore"
+                ],
+                "additionalProperties": false
+            }
+        },
+        "bestOption": {
+            "type": "string",
+            "format": "uuid"
+        }
+    },
+    "required": [
+        "answers",
+        "options",
+        "bestOption",
+        "questionId",
+        "title",
+        "activeAt"
+    ],
+    "additionalProperties": false
+}

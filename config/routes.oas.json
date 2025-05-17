@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "version": "0.1.5",
     "title": "CHOMP API",
+    "version": "0.1.7",
     "description": "Create questions and submit answers, to be resolved by CHOMP's mechanism engine. To request an API key, contact engineering@gator.so.",
     "contact": {
       "name": "API Support",
@@ -12,13 +12,64 @@
   },
   "servers": [
     {
-      "url": "https://api.chomp.games"
+      "url": "${env.BASE_URL}"
     }
   ],
   "paths": {
-       "/v1/questions": {
+    "/v1/questions": {
       "x-zuplo-path": {
         "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Get Questions",
+        "description": "Return an array with basic information about each question. For more details, query questions individually through get question endpoint.",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "${env.BASE_URL}"
+            }
+          },
+          "policies": {
+            "inbound": [
+              "api-key-inbound",
+              "rate-limit-inbound",
+              "add-user-metadata",
+              "set-headers-inbound"
+            ]
+          }
+        },
+        "operationId": "4d46e8f4-df3a-4b3f-a54b-3b248c18c2ef",
+        "responses": {
+          "200": {
+            "description": "A list of questions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/GetQuestionsResponse.json"
+                },
+                "example": [
+                  {
+                    "questionId": "71f3d63e-ebe6-4f77-9d7f-57d948e9c410",
+                    "title": "Is pineapple a valid pizza topping?",
+                    "description": "Settle the age-old debate once and for all.",
+                    "activeAt": "2025-06-01T00:00:00Z",
+                    "resolveAt": null
+                  },
+                  {
+                    "questionId": "a2b3c4d5-e6f7-4g8h-9i0j-k1l2m3n4o5p6",
+                    "title": "The CIA ran a mind control project called MK-Ultra.",
+                    "description": "From lizard people to leaked documents, some theories are pure fiction—others turned out to be true. Can you tell what is real and what is conspiracy cap?",
+                    "activeAt": "2025-05-01T00:00:00Z",
+                    "resolveAt": "2025-05-02T00:00:00Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
       },
       "post": {
         "summary": "Create Question",
@@ -29,7 +80,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateQuestionRequest"
+                "$ref": "../schemas/CreateQuestionRequest.json"
               },
               "example": {
                 "title": "The CIA ran a mind control project called MK-Ultra.",
@@ -76,29 +127,6 @@
             ]
           }
         }
-      },
-      "get": {
-        "summary": "Get Questions",
-        "description": "",
-        "x-zuplo-route": {
-          "corsPolicy": "anything-goes",
-          "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "baseUrl": "${env.BASE_URL}"
-            }
-          },
-          "policies": {
-            "inbound": [
-              "api-key-inbound",
-              "rate-limit-inbound",
-              "add-user-metadata",
-              "set-headers-inbound"
-            ]
-          }
-        },
-        "operationId": "4d46e8f4-df3a-4b3f-a54b-3b248c18c2ef"
       }
     },
     "/v1/questions/{questionId}/answer": {
@@ -107,20 +135,21 @@
       },
       "post": {
         "summary": "Answer Question",
-        "description": "Submit an answer for the given question",
+        "description": "Submit an answer for the given question. Weight defaults to 1 if not supplied.",
         "operationId": "5f1a5f6a-fa1b-446b-b18c-790b68035623",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AnswerQuestionRequest"
+                "$ref": "../schemas/AnswerQuestionRequest.json"
               },
               "example": {
                 "userAddress": "CHoMP5YdLEJ62kq9oibKbNDkBCgakQPqQLSgkDHyC2D9",
                 "firstOrderOptionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
                 "secondOrderOptionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2",
-                "secondOrderOptionEstimate": 0.75
+                "secondOrderOptionEstimate": 0.75,
+                "weight": 123.45
               }
             }
           }
@@ -166,7 +195,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateQuestionRequest"
+                "$ref": "../schemas/UpdateQuestionRequest.json"
               },
               "example": {
                 "resolveAt": "2025-05-03T00:00:00Z"
@@ -236,286 +265,44 @@
   },
   "components": {
     "schemas": {
-      "OptionInput": {
-        "type": "object",
-        "title": "Array of question options",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "The text of the option"
-          },
-          "index": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "Sequential integer starting at 0. Typically corresponds to the order that the option will be displayed in the UI."
-          }
-        },
-        "required": [
-          "title",
-          "index"
-        ],
-        "additionalProperties": false
-      },
-      "OptionOutput": {
-        "type": "object",
-        "title": "OptionOutput",
-        "properties": {
-          "optionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "index": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "Sequential integer starting at 0"
-          }
-        },
-        "required": [
-          "optionId",
-          "index"
-        ],
-        "additionalProperties": false
-      },
-      "CreateQuestionRequest": {
-        "type": "object",
-        "title": "CreateQuestionRequest",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "The text of the question"
-          },
-          "options": {
-            "title": "Options array",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OptionInput"
-            },
-            "minItems": 2,
-            "maxItems": 4,
-            "description": "Must contain exactly 2 or 4 options."
-          },
-          "activeAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "UTC timestamp for when voting starts."
-          },
-          "resolveAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "UTC timestamp for when voting ends."
-          },
-          "rules": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "imageUrl": {
-            "type": "string",
-            "format": "uri"
-          },
-          "onChainAddress": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "title",
-          "options",
-          "activeAt"
-        ],
-        "additionalProperties": false
-      },
-      "CreateQuestionResponse": {
-        "type": "object",
-        "title": "CreateQuestionResponse",
-        "properties": {
-          "questionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "options": {
-            "title": "Options array",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OptionOutput"
-            }
-          }
-        },
-        "required": [
-          "questionId",
-          "options"
-        ],
-        "additionalProperties": false
-      },
-      "AnswerQuestionRequest": {
-        "type": "object",
-        "title": "AnswerQuestionRequest",
-        "properties": {
-          "userAddress": {
-            "type": "string"
-          },
-          "firstOrderOptionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "secondOrderOptionId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "firstOrderOptionId and secondOrderOptionId can be the same or different. In CHOMP, secondOrderOptionId is randomized, but this is not a requirement of the API."
-          },
-          "secondOrderOptionEstimate": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1
-          }
-        },
-        "required": [
-          "userAddress",
-          "firstOrderOptionId",
-          "secondOrderOptionId",
-          "secondOrderOptionEstimate"
-        ],
-        "additionalProperties": false
-      },
-      "AnswerQuestionResponse": {
-        "type": "object",
-        "title": "AnswerQuestionResponse",
-        "properties": {
-          "answerId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "answerId"
-        ],
-        "additionalProperties": false
-      },
-      "UpdateQuestionRequest": {
-        "type": "object",
-        "title": "UpdateQuestionRequest",
-        "properties": {
-          "resolveAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "UTC timestamp for when voting ends."
-          }
-        },
-        "required": [
-          "resolveAt"
-        ],
-        "additionalProperties": false
-      },
-      "UpdateQuestionResponse": {
-        "type": "object",
-        "title": "UpdateQuestionResponse",
-        "properties": {
-          "questionId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "questionId"
-        ],
-        "additionalProperties": false
+      "GetQuestionResultResponse": {
+        "$ref": "../schemas/GetQuestionResultResponse.json"
       },
       "AnswerResult": {
-        "type": "object",
-        "title": "AnswerResult",
-        "properties": {
-          "firstOrderOptionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "secondOrderOptionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "secondOrderOptionEstimate": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1
-          },
-          "answerScore": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 2
-          },
-          "answerId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "firstOrderOptionId",
-          "secondOrderOptionId",
-          "secondOrderOptionEstimate",
-          "answerScore",
-          "answerId"
-        ],
-        "additionalProperties": false
+        "$ref": "../schemas/AnswerResult.json"
       },
-      "GetQuestionResponse": {
-        "type": "object",
-        "title": "GetQuestionResponse",
-        "properties": {
-          "answers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AnswerResult"
-            }
-          },
-          "options": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "optionId": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "optionScore": {
-                  "type": "number"
-                }
-              },
-              "required": [
-                "optionId",
-                "optionScore"
-              ],
-              "additionalProperties": false
-            }
-          },
-          "bestOption": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "answers",
-          "options",
-          "bestOption"
-        ],
-        "additionalProperties": false
+      "UpdateQuestionResponse": {
+        "$ref": "../schemas/UpdateQuestionResponse.json"
+      },
+      "UpdateQuestionRequest": {
+        "$ref": "../schemas/UpdateQuestionRequest.json"
+      },
+      "AnswerQuestionResponse": {
+        "$ref": "../schemas/AnswerQuestionResponse.json"
+      },
+      "AnswerQuestionRequest": {
+        "$ref": "../schemas/AnswerQuestionRequest.json"
+      },
+      "GetQuestionsResponse": {
+        "$ref": "../schemas/GetQuestionsResponse.json"
+      },
+      "Question": {
+        "$ref": "../schemas/Question.json"
+      },
+      "CreateQuestionResponse": {
+        "$ref": "../schemas/CreateQuestionResponse.json"
+      },
+      "CreateQuestionRequest": {
+        "$ref": "../schemas/CreateQuestionRequest.json"
+      },
+      "OptionOutput": {
+        "$ref": "../schemas/OptionOutput.json"
+      },
+      "OptionInput": {
+        "$ref": "../schemas/OptionInput.json"
       },
       "ErrorResponse": {
-        "type": "object",
-        "title": "ErrorResponse",
-        "properties": {
-          "error": {
-            "type": "string",
-            "description": "Machine readable error code"
-          },
-          "message": {
-            "type": "string",
-            "description": "Human readable error description"
-          }
-        },
-        "required": [
-          "error",
-          "message"
-        ],
-        "additionalProperties": false
+        "$ref": "../schemas/ErrorResponse.json"
       }
     },
     "responses": {
@@ -524,7 +311,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateQuestionResponse"
+              "$ref": "../schemas/CreateQuestionResponse.json"
             },
             "examples": {
               "default": {
@@ -552,7 +339,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
+              "$ref": "../schemas/ErrorResponse.json"
             },
             "examples": {
               "option_invalid": {
@@ -592,7 +379,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/AnswerQuestionResponse"
+              "$ref": "../schemas/AnswerQuestionResponse.json"
             },
             "examples": {
               "default": {
@@ -610,7 +397,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
+              "$ref": "../schemas/ErrorResponse.json"
             },
             "examples": {
               "answer_invalid_missing": {
@@ -671,7 +458,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/UpdateQuestionResponse"
+              "$ref": "../schemas/UpdateQuestionResponse.json"
             },
             "examples": {
               "default": {
@@ -689,7 +476,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
+              "$ref": "../schemas/ErrorResponse.json"
             },
             "examples": {
               "question_invalid_not_found": {
@@ -722,12 +509,17 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/GetQuestionResponse"
+              "$ref": "../schemas/GetQuestionResultResponse.json"
             },
             "examples": {
               "default": {
                 "summary": "Example results",
                 "value": {
+                  "questionId": "71f3d63e-ebe6-4f77-9d7f-57d948e9c410",
+                  "title": "The CIA ran a mind control project called MK-Ultra.",
+                  "description": "From lizard people to leaked documents, some theories are pure fiction—others turned out to be true. Can you tell what is real and what is conspiracy cap?",
+                  "activeAt": "2025-05-01T00:00:00Z",
+                  "resolveAt": "2025-05-02T00:00:00Z",
                   "answers": [
                     {
                       "firstOrderOptionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
@@ -747,10 +539,12 @@
                   "options": [
                     {
                       "optionId": "9a5e5b4e-4f00-4fbd-999f-888e0e713a83",
+                      "title": "Conspiracy",
                       "optionScore": 0.9
                     },
                     {
                       "optionId": "1fee3d61-9ab0-4cff-97e8-3e1c000ae2e2",
+                      "title": "Real",
                       "optionScore": -0.1
                     }
                   ],
@@ -766,7 +560,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
+              "$ref": "../schemas/ErrorResponse.json"
             },
             "examples": {
               "question_invalid": {

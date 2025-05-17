@@ -1,0 +1,20 @@
+{
+    "type": "object",
+    "title": "OptionOutput",
+    "properties": {
+        "optionId": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "index": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Sequential integer starting at 1"
+        }
+    },
+    "required": [
+        "optionId",
+        "index"
+    ],
+    "additionalProperties": false
+}

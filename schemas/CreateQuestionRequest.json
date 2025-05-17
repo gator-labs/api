@@ -1,0 +1,49 @@
+{
+    "type": "object",
+    "title": "CreateQuestionRequest",
+    "properties": {
+        "title": {
+            "type": "string",
+            "description": "The text of the question"
+        },
+        "options": {
+            "title": "Options array",
+            "type": "array",
+            "items": {
+                "$ref": "./OptionInput.json"
+            },
+            "minItems": 2,
+            "maxItems": 4,
+            "description": "Must contain exactly 2 or 4 options."
+        },
+        "activeAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting starts."
+        },
+        "resolveAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting ends."
+        },
+        "rules": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "imageUrl": {
+            "type": "string",
+            "format": "uri"
+        },
+        "onChainAddress": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "title",
+        "options",
+        "activeAt"
+    ],
+    "additionalProperties": false
+}

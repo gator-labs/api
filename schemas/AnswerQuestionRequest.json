@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "title": "AnswerQuestionRequest",
+    "properties": {
+        "userAddress": {
+            "type": "string"
+        },
+        "firstOrderOptionId": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "secondOrderOptionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "firstOrderOptionId and secondOrderOptionId can be the same or different. In CHOMP, secondOrderOptionId is randomized, but this is not a requirement of the API."
+        },
+        "secondOrderOptionEstimate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        },
+        "weight": {
+          "type": "number"
+        }
+    },
+    "required": [
+        "userAddress",
+        "firstOrderOptionId",
+        "secondOrderOptionId",
+        "secondOrderOptionEstimate"
+    ],
+    "additionalProperties": false
+}

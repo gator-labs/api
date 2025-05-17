@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "title": "AnswerQuestionResponse",
+    "properties": {
+        "answerId": {
+            "type": "string",
+            "format": "uuid"
+        }
+    },
+    "required": [
+        "answerId"
+    ],
+    "additionalProperties": false
+}
