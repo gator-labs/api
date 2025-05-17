@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "title": "CreateQuestionResponse",
+    "properties": {
+        "questionId": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "options": {
+            "title": "Options array",
+            "type": "array",
+            "items": {
+                "$ref": "./OptionOutput.json"
+            }
+        }
+    },
+    "required": [
+        "questionId",
+        "options"
+    ],
+    "additionalProperties": false
+}

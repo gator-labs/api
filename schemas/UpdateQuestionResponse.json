@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "title": "UpdateQuestionResponse",
+    "properties": {
+        "questionId": {
+            "type": "string",
+            "format": "uuid"
+        }
+    },
+    "required": [
+        "questionId"
+    ],
+    "additionalProperties": false
+}

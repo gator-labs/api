@@ -1,0 +1,77 @@
+{
+      "openapi": "3.1.0",
+    "info": {
+        "version": "0.1.5",
+        "title": "Get Questions",
+        "description": "Create questions and submit answers, to be resolved by CHOMP's mechanism engine. To request an API key, contact engineering@gator.so.",
+        "contact": {
+            "name": "API Support",
+            "url": "https://t.me/+ROJHe1iywYNkODA1",
+            "email": "engineering@gator.so"
+        }
+    },
+    "servers": [
+        {
+            "url": "${env.BASE_URL}"
+        }
+    ],
+    "paths": {
+        "/v1/questions": {
+            "x-zuplo-path": {
+                "pathMode": "open-api"
+            },
+            "get": {
+                "summary": "Get Questions",
+                "description": "",
+                "x-zuplo-route": {
+                    "corsPolicy": "anything-goes",
+                    "handler": {
+                        "export": "urlForwardHandler",
+                        "module": "$import(@zuplo/runtime)",
+                        "options": {
+                            "baseUrl": "${env.BASE_URL}"
+                        }
+                    },
+                    "policies": {
+                        "inbound": [
+                            "api-key-inbound",
+                            "rate-limit-inbound",
+                            "add-user-metadata",
+                            "set-headers-inbound"
+                        ]
+                    }
+                },
+                "operationId": "4d46e8f4-df3a-4b3f-a54b-3b248c18c2ef",
+                "responses": {
+                    "200": {
+                        "description": "A list of questions.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "../schemas/GetQuestionsResponse.json"
+                                },
+                                "example": [
+                                    {
+                                        "questionId": "71f3d63e-ebe6-4f77-9d7f-57d948e9c410",
+                                        "title": "Is pineapple a valid pizza topping?",
+                                        "description": "Settle the age-old debate once and for all.",
+                                        "activeAt": "2025-06-01T00:00:00Z",
+                                        "resolveAt": null
+                                    },
+                                    {
+                                        "questionId": "a2b3c4d5-e6f7-4g8h-9i0j-k1l2m3n4o5p6",
+                                        "title": "The CIA ran a mind control project called MK-Ultra.",
+                                        "description": "From lizard people to leaked documents, some theories are pure fiction—others turned out to be true. Can you tell what is real and what is conspiracy cap?",
+                                        "activeAt": "2025-05-01T00:00:00Z",
+                                        "resolveAt": "2025-05-02T00:00:00Z"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {}
+}

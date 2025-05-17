@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "title": "UpdateQuestionRequest",
+    "properties": {
+        "resolveAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting ends."
+        }
+    },
+    "required": [
+        "resolveAt"
+    ],
+    "additionalProperties": false
+}

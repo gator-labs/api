@@ -2,7 +2,8 @@
   "docs": [
     {
       "type": "api-ref",
-      "label": "API Reference"
+      "label": "API Reference",
+      "defaultPage": false
     }
   ]
 }

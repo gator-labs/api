@@ -1,0 +1,36 @@
+{
+    "type": "object",
+    "title": "Question",
+    "properties": {
+        "questionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier for the question"
+        },
+        "title": {
+            "type": "string",
+            "description": "The text of the question"
+        },
+        "description": {
+            "type": "string",
+            "description": "A detailed description of the question"
+        },
+        "activeAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting starts."
+        },
+        "resolveAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for when voting ends."
+        }
+    },
+    "required": [
+        "questionId",
+        "title",
+        "description",
+        "activeAt",
+        "resolveAt"
+    ]
+}

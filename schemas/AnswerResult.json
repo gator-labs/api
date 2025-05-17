@@ -1,0 +1,36 @@
+{
+    "type": "object",
+    "title": "AnswerResult",
+    "properties": {
+        "firstOrderOptionId": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "secondOrderOptionId": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "secondOrderOptionEstimate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        },
+        "answerScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2
+        },
+        "answerId": {
+            "type": "string",
+            "format": "uuid"
+        }
+    },
+    "required": [
+        "firstOrderOptionId",
+        "secondOrderOptionId",
+        "secondOrderOptionEstimate",
+        "answerScore",
+        "answerId"
+    ],
+    "additionalProperties": false
+}
