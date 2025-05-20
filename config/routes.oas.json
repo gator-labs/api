@@ -135,7 +135,7 @@
       },
       "post": {
         "summary": "Answer Question",
-        "description": "Submit an answer for the given question. Weight defaults to 1 if not supplied.",
+        "description": "Submit an answer for the given question. Weight defaults to 1 if not supplied. For binary questions only: firstOrderOptionId must equal secondOrderOptionId.",
         "operationId": "5f1a5f6a-fa1b-446b-b18c-790b68035623",
         "requestBody": {
           "required": true,
@@ -232,7 +232,7 @@
       },
       "get": {
         "summary": "Get Question & Results",
-        "description": "Retrieve answers, option scores, and best option for the specified question. answerScore is 0 to 2. optionScore is -1 to 1.",
+        "description": "Retrieve answers, option scores, and best option for the specified question. answerScore is 0 to 2. optionScore is -1 to 1. answerScore will be positive, even if the 1st order estimate was incorrect. If there are no 2nd order answers for a given option, optionScore will be NaN and will never be the best option.",
         "operationId": "b7d8f1f2-1234-4cde-9123-abcdef012345",
         "responses": {
           "200": {
