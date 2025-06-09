@@ -25,5 +25,5 @@
 /* The logo image */
 .theme-logo {
   content: var(--logo-url);
-  margin: 20px;
+  margin: 21px;
 }
