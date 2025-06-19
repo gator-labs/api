@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "title": "AnswerQuestionBatchResponse",
+    "properties": {
+        "answerId": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "success": {
+            "type": "boolean"
+        },
+        "error": {
+            "type": "string"
+        },
+        "errorMsg": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "success"
+    ],
+    "additionalProperties": false
+}
