@@ -188,7 +188,7 @@
       },
       "post": {
         "summary": "Batch Answer Questions",
-        "description": "Submit multiple answers for the given question. Weight defaults to 1 if not supplied. For binary questions only: firstOrderOptionId must equal secondOrderOptionId.",
+        "description": "Submit multiple answers for the given question. Weight defaults to 1 if not supplied. For binary questions only: firstOrderOptionId must equal secondOrderOptionId.\n\nMay give a global error with HTTP 4xx or 5xx or an individual answer may be rejected, in which case, the success and error fields will indicate which answers were successfully submitted.",
         "operationId": "c59d57bb-a256-41ab-8116-23aefcfc8a47",
         "requestBody": {
           "required": true,
