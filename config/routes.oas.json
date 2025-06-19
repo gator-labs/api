@@ -182,6 +182,65 @@
         }
       }
     },
+    "/v1/questions/{questionId}/answer/batch": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "post": {
+        "summary": "Batch Answer Questions",
+        "description": "Submit multiple answers for the given question. Weight defaults to 1 if not supplied. For binary questions only: firstOrderOptionId must equal secondOrderOptionId.",
+        "operationId": "c59d57bb-a256-41ab-8116-23aefcfc8a47",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../schemas/AnswerQuestionBatchRequest.json"
+              },
+              "example": [{
+                "userAddress": "2JgKX9wAogW3Bk16uxEdxxNEjzYt3J1XtzFXWCtTMkw5",
+                "firstOrderOptionId": "965f5829-8725-480c-ab2f-f49eb3fc681f",
+                "secondOrderOptionId": "b2a4389d-e7ac-4cc6-a23d-8e23390a8ce2",
+                "secondOrderOptionEstimate": 0.75,
+                "weight": 123.45
+              },{
+                "userAddress": "GRD8dLWy8YFLoAJr2d6JgSX94cyTngLJqqmgKsPg4WrV",
+                "firstOrderOptionId": "965f5829-8725-480c-ab2f-f49eb3fc681f",
+                "secondOrderOptionId": "b2a4389d-e7ac-4cc6-a23d-8e23390a8ce2",
+                "secondOrderOptionEstimate": 0.75,
+                "weight": 123.45
+              }]
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AnswerQuestionBatch200"
+          },
+          "400": {
+            "$ref": "#/components/responses/AnswerQuestion400"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "${env.BASE_URL}"
+            }
+          },
+          "policies": {
+            "inbound": [
+              "api-key-inbound",
+              "rate-limit-inbound",
+              "add-user-metadata",
+              "set-headers-inbound"
+            ]
+          }
+        }
+      }
+    },
     "/v1/questions/{questionId}": {
       "x-zuplo-path": {
         "pathMode": "open-api"
@@ -279,6 +338,9 @@
       },
       "AnswerQuestionResponse": {
         "$ref": "../schemas/AnswerQuestionResponse.json"
+      },
+      "AnswerQuestionBatchResponse": {
+        "$ref": "../schemas/AnswerQuestionBatchResponse.json"
       },
       "AnswerQuestionRequest": {
         "$ref": "../schemas/AnswerQuestionRequest.json"
@@ -448,6 +510,29 @@
                   "error": "user_invalid",
                   "message": "Could not find or create user account"
                 }
+              }
+            }
+          }
+        }
+      },
+      "AnswerQuestionBatch200": {
+        "description": "Answers submitted successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../schemas/AnswerQuestionBatchResponse.json"
+            },
+            "examples": {
+              "default": {
+                "summary": "One successful answer, one failed answer",
+                "value": [{
+                  "success": true,
+                  "answerId": "d3b082a2-1e21-4a8c-9d03-84b8f9cf0660"
+                }, {
+                  "success": false,
+                  "error": "option_invalid",
+                  "errorMsg": "First order option not valid"
+                }]
               }
             }
           }
